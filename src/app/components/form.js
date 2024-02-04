@@ -16,7 +16,7 @@ export const Form = ({ currentPage }) => {
   const [description, setDescription] = useState("");
   const { prefillUser, page } = useUserContext();
   const { createUser, editUser } = UseUserApi();
-  const [Component, setComponent] = useState();
+  const [ImageError, setImageError] = useState();
 
   useEffect(() => {
     if (prefillUser) {
@@ -28,7 +28,12 @@ export const Form = ({ currentPage }) => {
     }
   }, [prefillUser]);
 
-  useEffect(() => {}, []);
+  function formatDate(date) {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  }
 
   const handleCheckBox = () => {
     const checkbox = document.getElementById("checkbox");
@@ -44,19 +49,23 @@ export const Form = ({ currentPage }) => {
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
 
   const handleSubmit = (event) => {
+    setImageError(null);
     console.log("doing");
     event.preventDefault();
 
-    // if (!pictureFile) return;
+    if (!pictureFile) {
+      setImageError("ERRRR");
+      return;
+    }
 
-    // const formData = new FormData();
-    // formData.append("file", pictureFile);
+    const formData = new FormData();
+    formData.append("file", pictureFile);
     const user = {
       name,
-      birthdate: "2222-09-09",
+      birthdate: formatDate(birthdate),
       description,
       active_status: activeStatus,
-      //   profile_picture: formData,
+      profile_picture: formData,
     };
     if (page == "create") {
       createUser(user);
@@ -81,6 +90,9 @@ export const Form = ({ currentPage }) => {
           required
         />
       </div>
+      {ImageError && (
+        <div style={{ backgroundColor: "red" }}>Please choose and image</div>
+      )}
       <div>
         <label>Profile Picture:</label>
         <div {...getRootProps()}>
@@ -122,7 +134,11 @@ export const Form = ({ currentPage }) => {
           }}
         ></textarea>
       </div>
-      <button className="button submit" type="submit">
+      <button
+        className="button submit"
+        type="submit"
+        style={{ color: "green" }}
+      >
         Submit
       </button>
     </form>

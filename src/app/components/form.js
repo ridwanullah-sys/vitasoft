@@ -7,17 +7,13 @@ import { useUserContext } from "../hooks/useUserContext";
 
 import UseUserApi from "../hooks/useUserApi";
 
-import dynamic from "next/dynamic";
-
 export const Form = ({ currentPage }) => {
-  const Editor = dynamic(() => import("./ckeditor"), { ssr: false });
   const [name, setName] = useState("");
   const [birthdate, setBirthdate] = useState(new Date());
   const [profileImage, SetProfileImage] = useState(null);
   const [pictureFile, setPictureFile] = useState(null);
   const [activeStatus, setActiveStatus] = useState(false);
   const [description, setDescription] = useState("");
-  const [descriptionpre, setDescriptionpre] = useState("");
   const { prefillUser, page } = useUserContext();
   const { createUser, editUser } = UseUserApi();
   const [Component, setComponent] = useState();
@@ -28,7 +24,7 @@ export const Form = ({ currentPage }) => {
       SetProfileImage(prefillUser.profile_picture);
       setBirthdate(prefillUser.birthdate);
       setActiveStatus(prefillUser.active_status);
-      setDescriptionpre(prefillUser.description);
+      setDescription(prefillUser.description);
     }
   }, [prefillUser]);
 
@@ -119,10 +115,12 @@ export const Form = ({ currentPage }) => {
       </div>
       <div>
         <label>Description: </label>
-        <Editor
-          descriptionpre={descriptionpre}
-          setDescription={setDescription}
-        />
+        <textarea
+          value={description}
+          onChange={(e) => {
+            setDescription(e.target.value);
+          }}
+        ></textarea>
       </div>
       <button className="button submit" type="submit">
         Submit

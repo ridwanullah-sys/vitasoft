@@ -34,7 +34,7 @@ const UseUserApi = () => {
   const createUser = async (user) => {
     setError(null);
     setLoading(false);
-
+    console.log(user);
     try {
       const res = await fetch("https://tasks.vitasoftsolutions.com/userdata", {
         method: "POST",

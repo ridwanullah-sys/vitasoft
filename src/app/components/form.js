@@ -4,11 +4,13 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import Image from "next/image";
 import { useUserContext } from "../hooks/useUserContext";
-import { CKEditor } from "@ckeditor/ckeditor5-react";
-import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
+
 import UseUserApi from "../hooks/useUserApi";
 
+import dynamic from "next/dynamic";
+
 export const Form = ({ currentPage }) => {
+  const Editor = dynamic(() => import("./ckeditor"), { ssr: false });
   const [name, setName] = useState("");
   const [birthdate, setBirthdate] = useState(new Date());
   const [profileImage, SetProfileImage] = useState(null);
@@ -18,6 +20,7 @@ export const Form = ({ currentPage }) => {
   const [descriptionpre, setDescriptionpre] = useState("");
   const { prefillUser, page } = useUserContext();
   const { createUser, editUser } = UseUserApi();
+  const [Component, setComponent] = useState();
 
   useEffect(() => {
     if (prefillUser) {
@@ -28,6 +31,8 @@ export const Form = ({ currentPage }) => {
       setDescriptionpre(prefillUser.description);
     }
   }, [prefillUser]);
+
+  useEffect(() => {}, []);
 
   const handleCheckBox = () => {
     const checkbox = document.getElementById("checkbox");
@@ -63,12 +68,6 @@ export const Form = ({ currentPage }) => {
       editUser(user, prefillUser.id);
     }
     console.log("done");
-  };
-
-  const stripHtmlTags = (htmlString) => {
-    const tempElement = document.createElement("div");
-    tempElement.innerHTML = htmlString;
-    return tempElement.textContent || tempElement.innerText || "";
   };
 
   return (
@@ -120,12 +119,9 @@ export const Form = ({ currentPage }) => {
       </div>
       <div>
         <label>Description: </label>
-        <CKEditor
-          editor={ClassicEditor}
-          data={descriptionpre}
-          onChange={(event, editor) => {
-            setDescription(stripHtmlTags(editor.getData()));
-          }}
+        <Editor
+          descriptionpre={descriptionpre}
+          setDescription={setDescription}
         />
       </div>
       <button className="button submit" type="submit">
